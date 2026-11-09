@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>viewer01</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; background: #0f172a; color: #fff; }
+    #installBanner { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; padding: 20px; text-align: center; }
+    .card { background: #1e293b; padding: 30px; border-radius: 16px; max-width: 350px; border: 1px solid #334155; }
+    .btn-inst { background: #0284c7; color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; }
+    .toolbar { display: flex; gap: 8px; padding: 10px; background: #1e293b; }
+    .toolbar input { flex: 1; padding: 10px; border: 1px solid #475569; background: #0f172a; color: white; border-radius: 6px; }
+    .toolbar button { padding: 10px 16px; background: #0284c7; color: white; border: none; border-radius: 6px; font-weight: bold; }
+    iframe { flex: 1; border: none; width: 100%; height: 100%; background: #fff; }
+  </style>
+</head>
+<body>
+  <div id="installBanner">
+    <div class="card">
+      <h2>Installa viewer01</h2>
+      <p>Aggiungi subito l'icona alla schermata Home del tuo telefono.</p>
+      <button class="btn-inst" id="btnInstall">INSTALLA ORA</button>
+    </div>
+  </div>
+  <div class="toolbar">
+    <input type="url" id="appUrl" value="https://script.google.com/macros/s/AKfycbyKA31y1DVounPopnAS9LackRS0p9aXLNVZ_J91exSGPyV73B-rJVnwt5057z1mbhRg/exec">
+    <button onclick="loadApp()">Vai</button>
+  </div>
+  <iframe id="webFrame" src="https://script.google.com/macros/s/AKfycbyKA31y1DVounPopnAS9LackRS0p9aXLNVZ_J91exSGPyV73B-rJVnwt5057z1mbhRg/exec"></iframe>
+  <script>
+    let promptEvt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      promptEvt = e;
+      document.getElementById('installBanner').style.display = 'flex';
+    });
+    document.getElementById('btnInstall').addEventListener('click', async () => {
+      if (promptEvt) {
+        promptEvt.prompt();
+        await promptEvt.userChoice;
+        promptEvt = null;
+        document.getElementById('installBanner').style.display = 'none';
+      }
+    });
+    function loadApp() {
+      const u = document.getElementById('appUrl').value;
+      if (u) { document.getElementById('webFrame').src = u; }
+    }
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+  </script>
+</body>
+</html>
